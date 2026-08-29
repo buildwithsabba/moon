@@ -166,44 +166,78 @@ button {
     font-size: 13px;
 }
 
-#startButton {
+.launchControls {
     position: absolute;
     left: 50%;
     top: 48%;
     transform: translate(-50%, -50%);
-    padding: 16px 36px;
-    border: 1px solid rgba(255,255,255,.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    width: min(340px, 86%);
+}
+
+.nameInputBox {
+    width: 100%;
+}
+
+#recipientInput {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 100px;
-    background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(40, 80, 160, 0.45));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    padding: 13px 20px;
+    color: #ffffff;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all .25s ease;
+    font-family: inherit;
+}
+
+#recipientInput:focus {
+    border-color: rgba(255, 220, 140, 0.8);
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 20px rgba(255, 215, 120, 0.35);
+}
+
+#recipientInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+}
+
+#startButton {
+    width: 100%;
+    padding: 15px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 100px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(40, 90, 180, 0.5));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     color: white;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: .06em;
     cursor: pointer;
-    z-index: 100;
-    pointer-events: auto;
-    box-shadow: 0 0 30px rgba(255,255,255,.2);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2), 0 0 60px rgba(70, 130, 240, 0.2);
     transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
 #startButton:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,.28), rgba(50, 110, 220, 0.65));
-    transform: translate(-50%, -50%) scale(1.06);
-    box-shadow: 0 0 45px rgba(255,255,255,.35);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(60, 120, 230, 0.7));
+    transform: scale(1.04);
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.35), 0 0 80px rgba(80, 150, 255, 0.3);
 }
 
 #startButton:active {
-    transform: translate(-50%, -50%) scale(0.97);
-}
-
-#startButton:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,.24), rgba(50, 100, 200, 0.6));
-    transform: translate(-50%, -50%) scale(1.06);
-    box-shadow: 0 0 35px rgba(255,255,255,.3);
+    transform: scale(0.98);
 }
 
 #countdown {
@@ -1165,9 +1199,22 @@ canvas {
 
 </div>
 
-<button id="startButton">
-    Start mission 🚀
-</button>
+<div class="launchControls" id="launchControls">
+    <div class="nameInputBox">
+        <input 
+            type="text" 
+            id="recipientInput" 
+            placeholder="Her name (optional)..." 
+            maxlength="28" 
+            autocomplete="off"
+            spellcheck="false"
+        />
+    </div>
+
+    <button id="startButton" type="button">
+        Start mission 🚀
+    </button>
+</div>
 
 <div id="countdown">
     3
@@ -1561,6 +1608,80 @@ function initLaunchSmoke() {
 const launchSmoke = initLaunchSmoke();
 
 /* ========================================
+   RECIPIENT NAME (OPTIONAL) & DYNAMIC TEXTS
+======================================== */
+
+const recipientInput = document.getElementById("recipientInput");
+const missionTitle = document.getElementById("missionTitle");
+
+function getName() {
+    if (recipientInput && recipientInput.value.trim()) {
+        return recipientInput.value.trim();
+    }
+    return "Her";
+}
+
+function getPossessiveName() {
+    const name = getName();
+    if (name.toLowerCase() === "her") return "Her";
+    return name.endsWith("s") || name.endsWith("S") ? `${name}'` : `${name}'s`;
+}
+
+function updateDynamicTexts() {
+    const name = getName();
+    const isDefault = (name.toLowerCase() === "her");
+    const possessive = getPossessiveName();
+
+    if (missionTitle) {
+        missionTitle.textContent = isDefault ? "GET HER THE MOON" : `GET ${name.toUpperCase()} THE MOON`;
+    }
+
+    const moonMainTitle = document.getElementById("moonMainTitle");
+    if (moonMainTitle) {
+        moonMainTitle.textContent = isDefault ? "She asked me for the moon." : `${name} asked me for the moon.`;
+    }
+
+    const touchdownBadgeText = document.querySelector("#touchdownBadge .badgeText");
+    if (touchdownBadgeText && !revealed) {
+        touchdownBadgeText.textContent = isDefault ? "TAP HERE TO LAND ON THE MOON 🌕" : `TAP HERE TO LAND ${possessive.toUpperCase()} MOON 🌕`;
+    }
+
+    const missionStatus = document.getElementById("missionStatus");
+    if (missionStatus) {
+        missionStatus.textContent = isDefault ? "MISSION ACCOMPLISHED" : `MISSION ACCOMPLISHED FOR ${name.toUpperCase()}`;
+    }
+
+    const secretHeading = document.querySelector("#secret h2");
+    if (secretHeading) {
+        secretHeading.innerHTML = isDefault
+            ? `I couldn't bring you<br>the real one.<br>So I made this one yours.`
+            : `I couldn't bring you the real one, ${name}.<br>So I made this one yours.`;
+    }
+
+    const finalHeading = document.querySelector(".finalContent h1");
+    if (finalHeading) {
+        finalHeading.textContent = isDefault ? "The moon is yours." : `The moon is yours, ${name}.`;
+    }
+}
+
+// Read optional URL param
+const urlParams = new URLSearchParams(window.location.search);
+const paramName = urlParams.get("to") || urlParams.get("name") || urlParams.get("for");
+if (paramName && recipientInput) {
+    recipientInput.value = paramName;
+}
+updateDynamicTexts();
+
+if (recipientInput) {
+    recipientInput.addEventListener("input", updateDynamicTexts);
+    recipientInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            handleStartMission(e);
+        }
+    });
+}
+
+/* ========================================
    CHANGE SCENE
 ======================================== */
 
@@ -1578,7 +1699,6 @@ let missionStarted = false;
 function handleStartMission(e) {
     if (e) {
         e.preventDefault();
-        e.stopPropagation();
     }
     if (missionStarted) return;
     missionStarted = true;
@@ -1587,11 +1707,19 @@ function handleStartMission(e) {
 }
 
 startButton.addEventListener("click", handleStartMission);
-startButton.addEventListener("pointerdown", handleStartMission);
 
 async function startMission() {
-    startButton.style.display = "none";
-    status.textContent = "Request received: she wants the moon.";
+    const controls = document.getElementById("launchControls");
+    if (controls) {
+        controls.style.display = "none";
+    }
+
+    const name = getName();
+    const isDefault = (name.toLowerCase() === "her");
+
+    status.textContent = isDefault 
+        ? "Request received: she wants the moon."
+        : `Request received: ${name} wants the moon.`;
 
     await wait(1200);
     status.textContent = "Copy that.";
@@ -1655,6 +1783,9 @@ async function showNumber(number, toneFreq) {
 async function beginSpaceJourney() {
     showScene(spaceScene);
 
+    const name = getName();
+    const isDefault = (name.toLowerCase() === "her");
+
     flightTitle.textContent = "Leaving Earth...";
     flightStatus.textContent = "altitude increasing";
     await wait(1800);
@@ -1663,11 +1794,11 @@ async function beginSpaceJourney() {
     flightStatus.textContent = "signal: still good enough";
     await wait(1800);
 
-    flightTitle.textContent = "Destination locked: Moon";
+    flightTitle.textContent = isDefault ? "Destination locked: Moon" : `Destination locked: ${name}'s Moon`;
     flightStatus.textContent = "distance: 384,400 km";
     await wait(2200);
 
-    flightTitle.textContent = "She asked me for the moon.";
+    flightTitle.textContent = isDefault ? "She asked me for the moon." : `${name} asked me for the moon.`;
     flightStatus.textContent = "request accepted";
     await wait(2200);
 
@@ -1688,6 +1819,7 @@ async function beginSpaceJourney() {
 
     // Transition to Mega Moon Scene
     showScene(moonScene);
+    updateDynamicTexts();
 
     if (moon) {
         moon.classList.remove("megaMoonEnter");
@@ -1775,17 +1907,20 @@ function confirmTouchdown(clickEvent) {
     initAudio();
     playTouchdownChime();
 
+    const name = getName();
+    const isDefault = (name.toLowerCase() === "her");
+
     const badge = document.getElementById("touchdownBadge");
     if (badge) {
         badge.classList.remove("pulsePrompt");
         badge.classList.add("touchdownSuccess");
-        badge.innerHTML = `<span class="badgeIcon">✓</span><span class="badgeText">TOUCHDOWN CONFIRMED · WELCOME TO THE MOON 🌙</span>`;
+        badge.innerHTML = `<span class="badgeIcon">✓</span><span class="badgeText">${isDefault ? "TOUCHDOWN CONFIRMED · WELCOME TO THE MOON 🌙" : `TOUCHDOWN CONFIRMED · THE MOON IS FOR ${name.toUpperCase()} 🌙`}</span>`;
     }
 
     const orb1 = document.getElementById("orbitLine1");
     const orb2 = document.getElementById("orbitLine2");
     if (orb1) orb1.textContent = "LUNAR TOUCHDOWN CONFIRMED";
-    if (orb2) orb2.textContent = "WELCOME TO THE MOON ♡";
+    if (orb2) orb2.textContent = isDefault ? "WELCOME TO THE MOON ♡" : `WELCOME TO THE MOON, ${name.toUpperCase()} ♡`;
 
     if (moonRipple) {
         moonRipple.classList.remove("rippleActive");
@@ -1855,6 +1990,7 @@ moon.addEventListener("pointercancel", () => {
 ======================================== */
 
 function revealSecret() {
+    updateDynamicTexts();
     secret.classList.add("visible");
     keepButton.style.display = "block";
 }
@@ -1949,6 +2085,7 @@ keepButton.addEventListener("click", async () => {
     missionStatus.textContent = "OWNERSHIP TRANSFER COMPLETE ✓";
     await wait(1100);
 
+    updateDynamicTexts();
     showScene(finalScene);
 });
 
