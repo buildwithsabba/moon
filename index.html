@@ -1428,6 +1428,15 @@ const secret = document.getElementById("secret");
 const keepButton = document.getElementById("keepButton");
 const missionStatus = document.getElementById("missionStatus");
 
+// State Variables
+let revealed = false;
+let dragging = false;
+let startX = 0, startY = 0;
+let moonX = 0, moonY = 0;
+let originalX = 0, originalY = 0;
+let dragMoved = false;
+let missionStarted = false;
+
 function wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -1694,8 +1703,6 @@ function showScene(scene) {
    START LAUNCH SEQUENCE
 ======================================== */
 
-let missionStarted = false;
-
 function handleStartMission(e) {
     if (e) {
         e.preventDefault();
@@ -1892,13 +1899,6 @@ document.addEventListener("mousemove", event => {
 /* ========================================
    MEGA MOON INTERACTION & TOUCHDOWN
 ======================================== */
-
-let dragging = false;
-let startX = 0, startY = 0;
-let moonX = 0, moonY = 0;
-let originalX = 0, originalY = 0;
-let revealed = false;
-let dragMoved = false;
 
 function confirmTouchdown(clickEvent) {
     if (revealed) return;
