@@ -166,120 +166,38 @@ button {
     font-size: 13px;
 }
 
-/* Name Personalization Card */
-.nameSetupContainer {
-    position: absolute;
-    left: 50%;
-    top: 41%;
-    transform: translate(-50%, -50%);
-    width: min(440px, 88%);
-    background: rgba(14, 20, 36, 0.72);
-    border: 1px solid rgba(255, 220, 130, 0.35);
-    border-radius: 20px;
-    padding: 18px 20px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 0 35px rgba(0, 0, 0, 0.55), 0 0 25px rgba(100, 180, 255, 0.15);
-    z-index: 28;
-    text-align: center;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.nameInputLabel {
-    display: block;
-    font-family: monospace;
-    font-size: 11px;
-    letter-spacing: .22em;
-    color: #f7d197;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-}
-
-.nameInputWrapper {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-}
-
-#recipientInput {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 100px;
-    padding: 11px 18px;
-    color: #ffffff;
-    font-size: 15px;
-    outline: none;
-    text-align: center;
-    font-family: inherit;
-    transition: all .25s ease;
-}
-
-#recipientInput:focus {
-    border-color: #ffd88a;
-    background: rgba(255, 255, 255, 0.14);
-    box-shadow: 0 0 15px rgba(255, 215, 120, 0.4);
-}
-
-#recipientInput::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-    font-size: 13px;
-}
-
-.copyShareBtn {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 100px;
-    padding: 11px 16px;
-    color: #ffe8b5;
-    font-size: 12px;
-    font-family: monospace;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all .25s ease;
-}
-
-.copyShareBtn:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: #ffd88a;
-    transform: scale(1.04);
-}
-
-.copiedToast {
-    margin-top: 10px;
-    font-family: monospace;
-    font-size: 11px;
-    color: #a8ffcc;
-    opacity: 0;
-    transform: translateY(4px);
-    transition: all .3s ease;
-    pointer-events: none;
-}
-
-.copiedToast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 #startButton {
     position: absolute;
     left: 50%;
-    top: 56%;
+    top: 48%;
     transform: translate(-50%, -50%);
-    padding: 14px 32px;
-    border: 1px solid rgba(255,255,255,.3);
+    padding: 16px 36px;
+    border: 1px solid rgba(255,255,255,.35);
     border-radius: 100px;
-    background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(40, 80, 160, 0.4));
+    background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(40, 80, 160, 0.45));
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     color: white;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
-    letter-spacing: .05em;
+    letter-spacing: .06em;
     cursor: pointer;
-    z-index: 30;
-    box-shadow: 0 0 25px rgba(255,255,255,.15);
+    z-index: 100;
+    pointer-events: auto;
+    box-shadow: 0 0 30px rgba(255,255,255,.2);
     transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#startButton:hover {
+    background: linear-gradient(135deg, rgba(255,255,255,.28), rgba(50, 110, 220, 0.65));
+    transform: translate(-50%, -50%) scale(1.06);
+    box-shadow: 0 0 45px rgba(255,255,255,.35);
+}
+
+#startButton:active {
+    transform: translate(-50%, -50%) scale(0.97);
 }
 
 #startButton:hover {
@@ -1247,24 +1165,6 @@ canvas {
 
 </div>
 
-<div class="nameSetupContainer" id="nameSetupContainer">
-    <label for="recipientInput" class="nameInputLabel">✨ WHO IS THIS MOON FOR? ✨</label>
-    <div class="nameInputWrapper">
-        <input 
-            type="text" 
-            id="recipientInput" 
-            placeholder="Enter her name (e.g. Emma, My Love)..." 
-            maxlength="28" 
-            autocomplete="off"
-            spellcheck="false"
-        />
-        <button id="copyShareLinkBtn" class="copyShareBtn" type="button" title="Copy shareable link with this name">
-            🔗 Copy Link
-        </button>
-    </div>
-    <div id="copiedToast" class="copiedToast">✓ Personalized link copied to clipboard!</div>
-</div>
-
 <button id="startButton">
     Start mission 🚀
 </button>
@@ -1661,116 +1561,6 @@ function initLaunchSmoke() {
 const launchSmoke = initLaunchSmoke();
 
 /* ========================================
-   RECIPIENT NAME PERSONALIZATION & SHARING
-======================================== */
-
-const nameSetupContainer = document.getElementById("nameSetupContainer");
-const recipientInput = document.getElementById("recipientInput");
-const copyShareLinkBtn = document.getElementById("copyShareLinkBtn");
-const missionTitle = document.getElementById("missionTitle");
-
-function getName() {
-    if (recipientInput && recipientInput.value.trim()) {
-        return recipientInput.value.trim();
-    }
-    return "Her";
-}
-
-function getPossessiveName() {
-    const name = getName();
-    if (name.toLowerCase() === "her") return "Her";
-    return name.endsWith("s") || name.endsWith("S") ? `${name}'` : `${name}'s`;
-}
-
-function updateDynamicTexts() {
-    const name = getName();
-    const isDefault = (name.toLowerCase() === "her");
-    const possessive = getPossessiveName();
-
-    if (missionTitle) {
-        missionTitle.textContent = isDefault ? "GET HER THE MOON" : `GET ${name.toUpperCase()} THE MOON`;
-    }
-
-    const moonMainTitle = document.getElementById("moonMainTitle");
-    if (moonMainTitle) {
-        moonMainTitle.textContent = isDefault ? "She asked me for the moon." : `${name} asked me for the moon.`;
-    }
-
-    const touchdownBadgeText = document.querySelector("#touchdownBadge .badgeText");
-    if (touchdownBadgeText && !revealed) {
-        touchdownBadgeText.textContent = isDefault ? "TAP HERE TO LAND ON THE MOON 🌕" : `TAP HERE TO LAND ${possessive.toUpperCase()} MOON 🌕`;
-    }
-
-    const missionStatus = document.getElementById("missionStatus");
-    if (missionStatus) {
-        missionStatus.textContent = isDefault ? "MISSION ACCOMPLISHED" : `MISSION ACCOMPLISHED FOR ${name.toUpperCase()}`;
-    }
-
-    const secretHeading = document.querySelector("#secret h2");
-    if (secretHeading) {
-        secretHeading.innerHTML = isDefault
-            ? `I couldn't bring you<br>the real one.<br>So I made this one yours.`
-            : `I couldn't bring you the real one, ${name}.<br>So I made this one yours.`;
-    }
-
-    const finalHeading = document.querySelector(".finalContent h1");
-    if (finalHeading) {
-        finalHeading.textContent = isDefault ? "The moon is yours." : `The moon is yours, ${name}.`;
-    }
-}
-
-// Read URL param on load
-const urlParams = new URLSearchParams(window.location.search);
-const paramName = urlParams.get("to") || urlParams.get("name") || urlParams.get("for");
-if (paramName && recipientInput) {
-    recipientInput.value = paramName;
-}
-updateDynamicTexts();
-
-if (recipientInput) {
-    recipientInput.addEventListener("input", updateDynamicTexts);
-}
-
-// Copy Shareable Link
-function fallbackCopy(text, onSuccess) {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.top = "-9999px";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try {
-        if (document.execCommand("copy") && onSuccess) onSuccess();
-    } catch (e) {}
-    document.body.removeChild(ta);
-}
-
-if (copyShareLinkBtn) {
-    copyShareLinkBtn.addEventListener("click", () => {
-        const name = recipientInput ? recipientInput.value.trim() : "";
-        const baseUrl = window.location.origin + window.location.pathname;
-        const shareUrl = name ? `${baseUrl}?to=${encodeURIComponent(name)}` : baseUrl;
-
-        function showSuccess() {
-            const toast = document.getElementById("copiedToast");
-            if (toast) {
-                toast.classList.add("show");
-                setTimeout(() => toast.classList.remove("show"), 2600);
-            }
-        }
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(shareUrl).then(showSuccess).catch(() => {
-                fallbackCopy(shareUrl, showSuccess);
-            });
-        } else {
-            fallbackCopy(shareUrl, showSuccess);
-        }
-    });
-}
-
-/* ========================================
    CHANGE SCENE
 ======================================== */
 
@@ -1783,23 +1573,25 @@ function showScene(scene) {
    START LAUNCH SEQUENCE
 ======================================== */
 
-startButton.addEventListener("click", () => {
+let missionStarted = false;
+
+function handleStartMission(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    if (missionStarted) return;
+    missionStarted = true;
     initAudio();
     startMission();
-});
+}
+
+startButton.addEventListener("click", handleStartMission);
+startButton.addEventListener("pointerdown", handleStartMission);
 
 async function startMission() {
-    if (nameSetupContainer) {
-        nameSetupContainer.style.display = "none";
-    }
     startButton.style.display = "none";
-
-    const name = getName();
-    const isDefault = (name.toLowerCase() === "her");
-
-    status.textContent = isDefault 
-        ? "Request received: she wants the moon."
-        : `Request received: ${name} wants the moon.`;
+    status.textContent = "Request received: she wants the moon.";
 
     await wait(1200);
     status.textContent = "Copy that.";
@@ -1863,9 +1655,6 @@ async function showNumber(number, toneFreq) {
 async function beginSpaceJourney() {
     showScene(spaceScene);
 
-    const name = getName();
-    const isDefault = (name.toLowerCase() === "her");
-
     flightTitle.textContent = "Leaving Earth...";
     flightStatus.textContent = "altitude increasing";
     await wait(1800);
@@ -1874,11 +1663,11 @@ async function beginSpaceJourney() {
     flightStatus.textContent = "signal: still good enough";
     await wait(1800);
 
-    flightTitle.textContent = isDefault ? "Destination locked: Moon" : `Destination locked: ${name}'s Moon`;
+    flightTitle.textContent = "Destination locked: Moon";
     flightStatus.textContent = "distance: 384,400 km";
     await wait(2200);
 
-    flightTitle.textContent = isDefault ? "She asked me for the moon." : `${name} asked me for the moon.`;
+    flightTitle.textContent = "She asked me for the moon.";
     flightStatus.textContent = "request accepted";
     await wait(2200);
 
@@ -1899,7 +1688,6 @@ async function beginSpaceJourney() {
 
     // Transition to Mega Moon Scene
     showScene(moonScene);
-    updateDynamicTexts();
 
     if (moon) {
         moon.classList.remove("megaMoonEnter");
@@ -1987,20 +1775,17 @@ function confirmTouchdown(clickEvent) {
     initAudio();
     playTouchdownChime();
 
-    const name = getName();
-    const isDefault = (name.toLowerCase() === "her");
-
     const badge = document.getElementById("touchdownBadge");
     if (badge) {
         badge.classList.remove("pulsePrompt");
         badge.classList.add("touchdownSuccess");
-        badge.innerHTML = `<span class="badgeIcon">✓</span><span class="badgeText">${isDefault ? "TOUCHDOWN CONFIRMED · WELCOME TO THE MOON 🌙" : `TOUCHDOWN CONFIRMED · THE MOON IS FOR ${name.toUpperCase()} 🌙`}</span>`;
+        badge.innerHTML = `<span class="badgeIcon">✓</span><span class="badgeText">TOUCHDOWN CONFIRMED · WELCOME TO THE MOON 🌙</span>`;
     }
 
     const orb1 = document.getElementById("orbitLine1");
     const orb2 = document.getElementById("orbitLine2");
     if (orb1) orb1.textContent = "LUNAR TOUCHDOWN CONFIRMED";
-    if (orb2) orb2.textContent = isDefault ? "WELCOME TO THE MOON ♡" : `WELCOME TO THE MOON, ${name.toUpperCase()} ♡`;
+    if (orb2) orb2.textContent = "WELCOME TO THE MOON ♡";
 
     if (moonRipple) {
         moonRipple.classList.remove("rippleActive");
@@ -2070,7 +1855,6 @@ moon.addEventListener("pointercancel", () => {
 ======================================== */
 
 function revealSecret() {
-    updateDynamicTexts();
     secret.classList.add("visible");
     keepButton.style.display = "block";
 }
@@ -2153,7 +1937,7 @@ function createExplosion(centerX, centerY) {
 
 /* ========================================
    KEEP MOON / OWNERSHIP TRANSFER
-======================================== */
+======================================= */
 
 keepButton.addEventListener("click", async () => {
     createExplosion(window.innerWidth / 2, window.innerHeight * 0.6);
@@ -2165,7 +1949,6 @@ keepButton.addEventListener("click", async () => {
     missionStatus.textContent = "OWNERSHIP TRANSFER COMPLETE ✓";
     await wait(1100);
 
-    updateDynamicTexts();
     showScene(finalScene);
 });
 
